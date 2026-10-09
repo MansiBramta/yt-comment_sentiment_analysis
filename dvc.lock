@@ -86,3 +86,35 @@ stages:
       hash: md5
       md5: 6ee1273c93d58f839e507219b89a71e7
       size: 188409
+  model_building:
+    cmd: python src/model/model_building.py
+    deps:
+    - path: data/processed/X_train.npz
+      hash: md5
+      md5: 62f96cbf50658098f1da79e80dddfccf
+      size: 3914153
+    - path: data/processed/y_train.npy
+      hash: md5
+      md5: 8ad1acfb33d64c82ef6e6af99da8eb7c
+      size: 234760
+    - path: src/model/model_building.py
+      hash: md5
+      md5: e7279f357f8529e91ea5a5e5c30a42c3
+      size: 1857
+    params:
+      params.yaml:
+        model_building:
+          cv_folds: 5
+          random_state: 42
+          lightgbm:
+            n_estimators: 200
+            learning_rate: 0.1
+            num_leaves: 31
+          linear_svc_C: 1.0
+          logistic_regression_C: 1.0
+          complement_nb_alpha: 0.5
+    outs:
+    - path: models/stacking_model.pkl
+      hash: md5
+      md5: 6806dab6cd093324b0800558b683349a
+      size: 3092150
