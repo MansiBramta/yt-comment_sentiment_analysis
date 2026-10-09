@@ -2,17 +2,19 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import yaml
+
+# project root = 3 levels up from this file (src/data/data_ingestion.py)
+ROOT = Path(__file__).resolve().parents[2]
+OUT_DIR = ROOT / "data" / "raw"
 
 # ---- settings (change these) ----
 DATA_URL = "https://raw.githubusercontent.com/Himanshu-1703/reddit-sentiment-analysis/refs/heads/main/data/reddit.csv"
 TEXT_COL = "clean_comment"
 TARGET_COL = "category"
-TEST_SIZE = 0.2
-RANDOM_STATE = 42
-
-# project root = 3 levels up from this file (src/data/data_ingestion.py)
-ROOT = Path(__file__).resolve().parents[2]
-OUT_DIR = ROOT / "data" / "raw"
+params = yaml.safe_load(open(ROOT /"params.yaml"))["data_ingestion"]
+TEST_SIZE = params["test_size"]
+RANDOM_STATE = params["random_state"]
 
 
 def load_data(url: str) -> pd.DataFrame:

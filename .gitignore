@@ -89,4 +89,9 @@ target/
 .mypy_cache/
 
 mlflow.db
-mlruns/         
+mlruns/ 
+
+myenv/
+dvc-storage/
+mlflow.db
+mlruns/
