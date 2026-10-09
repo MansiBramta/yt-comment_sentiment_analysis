@@ -19,4 +19,20 @@ stages:
     outs:
       - data/interim/train_processed.csv
       - data/interim/test_processed.csv
+
+  feature_engineering:
+    cmd: python src/features/feature_engineering.py
+    deps:
+      - src/features/feature_engineering.py
+      - data/interim/train_processed.csv
+      - data/interim/test_processed.csv
+    params:
+      - feature_engineering.max_features
+      - feature_engineering.ngram_range
+    outs:
+      - data/processed/X_train.npz
+      - data/processed/X_test.npz
+      - data/processed/y_train.npy
+      - data/processed/y_test.npy
+      - models/tfidf_vectorizer.pkl
       
