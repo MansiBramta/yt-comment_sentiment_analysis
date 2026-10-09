@@ -46,3 +46,14 @@ stages:
       - model_building
     outs:
       - models/stacking_model.pkl
+
+  model_evaluation:
+    cmd: python src/model/model_evaluation.py
+    deps:
+      - src/model/model_evaluation.py
+      - models/stacking_model.pkl
+      - data/processed/X_test.npz
+      - data/processed/y_test.npy
+    metrics:
+      - metrics.json:
+          cache: false

@@ -16,3 +16,6 @@ model_building:
   linear_svc_C: 1.0
   logistic_regression_C: 1.0
   complement_nb_alpha: 0.5
+
+mlflow:
+  experiment_name: "Reddit sentiment - DVC pipeline"
