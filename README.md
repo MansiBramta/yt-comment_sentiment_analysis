@@ -1,57 +1,50 @@
-yt-comment_sentiment_analysis
-==============================
+# yt-comment_sentiment_analysis
 
-A small chrome plugin to detect youtube comment sentiments
+ML pipeline for a small Chrome plugin that detects the sentiment of YouTube comments.
+The model is trained on ~37k labelled Reddit comments and classifies each comment as
+**negative (-1), neutral (0) or positive (1)** using classic ML only (no deep learning).
+Built as a reproducible pipeline with **DVC**, with experiments tracked in **MLflow**.
 
-Project Organization
-------------
+## Results (test set)
 
-    ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── data
-    │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
-    │   ├── processed      <- The final, canonical data sets for modeling.
-    │   └── raw            <- The original, immutable data dump.
-    │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
-    │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
-    │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
-    │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-    │
-    ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures        <- Generated graphics and figures to be used in reporting
-    │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
-    │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-    ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
-    │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
+| Metric | Score |
+|---|---|
+| Macro F1 | 0.864 |
+| Accuracy | 0.874 |
+| F1 negative / neutral / positive | 0.795 / 0.912 / 0.885 |
 
+Final model: stacking ensemble (LightGBM + LinearSVC + Logistic Regression + Complement Naive Bayes) with a Logistic Regression meta-model.
 
---------
+## Pipeline
 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+```mermaid
+flowchart TD
+    A[data_ingestion<br/>download, clean, train/test split] --> B[data_preprocessing<br/>lowercase, stopwords, lemmatize]
+    B --> C[feature_engineering<br/>TF-IDF 1-3 grams, 5000 features]
+    C --> D[model_building<br/>stacking ensemble]
+    C --> E
+    D --> E[model_evaluation<br/>metrics.json + MLflow]
+```
+
+## Approach
+
+- Cleaned data: removed missing values, empty strings and duplicates; stratified 80/20 split.
+- Compared Bag-of-Words vs TF-IDF and uni/bi/tri-grams, then tuned `max_features`.
+- Tested imbalance techniques (class weights, SMOTE variants, under/over-sampling).
+- Compared 7 algorithms (LogReg, LinearSVC, Complement NB, KNN, Random Forest, XGBoost, LightGBM), tuned with GridSearch and Optuna.
+- Combined the best models with voting and stacking.
+- Metric focus: macro F1 and negative-class F1 (the minority, hardest class).
+
+## How to run
+
+```bash
+pip install -r requirements.txt
+dvc repro              # runs only the stages whose inputs or params changed
+dvc metrics show       # test scores
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+```
+
+All settings live in `params.yaml`.
+
+## Tech stack
+Python, scikit-learn, LightGBM, NLTK, DVC, MLflow, Optuna
