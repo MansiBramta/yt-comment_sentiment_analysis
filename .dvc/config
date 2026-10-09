@@ -1,4 +1,7 @@
 [core]
-    remote = myremote
+    remote = s3remote
 ['remote "myremote"']
     url = ../dvc-storage
+['remote "s3remote"']
+    url = s3://mansi-yt-sentiment-dvc-2026/dvc-store
+    region = ap-southeast-2
