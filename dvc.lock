@@ -84,7 +84,7 @@ stages:
       size: 234760
     - path: models/tfidf_vectorizer.pkl
       hash: md5
-      md5: 6ee1273c93d58f839e507219b89a71e7
+      md5: 1a7af49ae0b87617673f53990fbb3758
       size: 188409
   model_building:
     cmd: python src/model/model_building.py
