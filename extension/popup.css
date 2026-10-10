@@ -1,0 +1,23 @@
+body { width: 420px; margin: 0; padding: 16px; background: #1e1e1e; color: #eee;
+       font-family: Arial, sans-serif; }
+h1 { font-size: 20px; margin: 0 0 12px; }
+h3 { color: #3fa7ff; margin: 8px 0 2px; }
+#status { color: #aaa; font-size: 13px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.tile { background: #333; border-radius: 8px; padding: 12px; text-align: center; }
+.tile span { display: block; font-size: 13px; color: #ccc; }
+.tile b { font-size: 24px; }
+
+.chartbox { height: 240px; margin-top: 8px; }
+
+.cloud { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center;
+         align-items: center; background: #2b2b2b; border-radius: 8px; padding: 16px; }
+.cloud span { line-height: 1.1; font-weight: bold; }
+
+.comment { background: #2b2b2b; border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+.comment p { margin: 0 0 6px; font-size: 13px; line-height: 1.4; word-break: break-word; }
+.meta { display: flex; gap: 10px; align-items: center; font-size: 12px; color: #aaa; }
+.badge { padding: 2px 8px; border-radius: 10px; color: #111; font-weight: bold; }
+.badge.positive { background: #2ecc71; }
+.badge.neutral { background: #9aa0a6; }
+.badge.negative { background: #e74c3c; }

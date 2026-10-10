@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <h1>YouTube Comment Analyzer</h1>
+  <h3>Video ID</h3>
+  <p id="videoId">-</p>
+  <p id="status">Loading...</p>
+
+  <div class="grid">
+    <div class="tile"><span>Total Comments</span><b id="total">-</b></div>
+    <div class="tile"><span>Unique Commenters</span><b id="unique">-</b></div>
+    <div class="tile"><span>Avg Comment Length</span><b id="length">-</b></div>
+    <div class="tile"><span>Avg Sentiment Score</span><b id="score">-</b></div>
+  </div>
+
+  <h3>Sentiment Distribution</h3>
+  <div class="chartbox"><canvas id="pie"></canvas></div>
+
+  <h3>Sentiment Trend Over Time (weekly)</h3>
+  <div class="chartbox"><canvas id="trend"></canvas></div>
+
+  <h3>Word Cloud</h3>
+  <div id="cloud" class="cloud"></div>
+
+  <h3>Top Comments</h3>
+  <div id="topComments"></div>
+
+  <script src="chart.umd.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
