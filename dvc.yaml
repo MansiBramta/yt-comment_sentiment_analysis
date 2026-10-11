@@ -57,3 +57,12 @@ stages:
     metrics:
       - metrics.json:
           cache: false
+    outs:
+      - reports/experiment_info.json:
+          cache: false
+
+  model_registration:
+    cmd: python src/model/model_registration.py
+    deps:
+      - src/model/model_registration.py
+      - reports/experiment_info.json

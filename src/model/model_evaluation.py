@@ -10,6 +10,8 @@ import mlflow
 import mlflow.sklearn
 import numpy as np
 import yaml
+from mlflow.models import ModelSignature          # NEW
+from mlflow.types.schema import Schema, TensorSpec  # NEW
 from scipy import sparse
 from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, f1_score
 
@@ -55,15 +57,34 @@ def main() -> None:
     cm_path = REPORT_DIR / "confusion_matrix.png"
     plt.savefig(cm_path, dpi=120, bbox_inches="tight")
 
+    # NEW: the model's contract: input = (rows, n_features) numbers, output = one label per row
+    signature = ModelSignature(
+        inputs=Schema([TensorSpec(X_test.dtype, (-1, X_test.shape[1]))]),
+        outputs=Schema([TensorSpec(pred.dtype, (-1,))]),
+    )
+
     # ---- MLflow ----
     mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI", f"sqlite:///{ROOT / 'mlflow.db'}"))
     mlflow.set_experiment(all_params["mlflow"]["experiment_name"])
-    with mlflow.start_run(run_name="stacking"):
+    with mlflow.start_run(run_name="stacking") as run:
         mlflow.log_params(flatten({k: v for k, v in all_params.items() if k != "mlflow"}))
         mlflow.log_metrics(metrics)
         mlflow.log_artifact(str(cm_path))
         mlflow.log_artifact(str(MODEL_DIR / "tfidf_vectorizer.pkl"))
-        mlflow.sklearn.log_model(model, name="model", serialization_format="cloudpickle")
+        model_info = mlflow.sklearn.log_model(
+            model,
+            name="model",
+            serialization_format="cloudpickle",
+            signature=signature,  # NEW
+        )
+
+    # remember which run/model we just created, for the registration step
+    info = {
+        "run_id": run.info.run_id,
+        "model_id": model_info.model_id,
+        "model_uri": model_info.model_uri,
+    }
+    json.dump(info, open(REPORT_DIR / "experiment_info.json", "w"), indent=2)
 
     print(metrics)
 
