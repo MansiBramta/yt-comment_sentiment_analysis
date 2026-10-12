@@ -1,0 +1,11 @@
+myenv/
+.git/
+.dvc/
+.env
+data/
+reports/
+mlruns/
+__pycache__/
+*.pyc
+extension/
+tests/
