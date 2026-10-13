@@ -1,0 +1,8 @@
+| model | macro_f1 | accuracy | f1_negative | f1_neutral | f1_positive | train_seconds |
+|---|---|---|---|---|---|---|
+| Majority-class baseline | 0.2005 | 0.4301 | 0.0 | 0.0 | 0.6015 | - |
+| LightGBM | 0.8509 | 0.8609 | 0.7881 | 0.8978 | 0.8667 | 64.9 |
+| Linear SVM (calibrated) | 0.8435 | 0.8586 | 0.7613 | 0.8949 | 0.8744 | 2.9 |
+| Logistic Regression | 0.8284 | 0.84 | 0.7541 | 0.8806 | 0.8505 | 1.4 |
+| Complement Naive Bayes | 0.6886 | 0.7068 | 0.6142 | 0.6672 | 0.7844 | 0.0 |
+| Stacking ensemble (final) | 0.864 | 0.8744 | 0.7948 | 0.912 | 0.8852 | - |

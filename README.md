@@ -22,7 +22,7 @@ Evaluated on a held-out test set of 7,333 comments.
 | F1, neutral | 0.912 |
 | F1, positive | 0.885 |
 
-Macro F1 is the headline metric because the classes are imbalanced (neutral dominates), so plain accuracy would hide weak performance on the negative class. The confusion matrix is in `reports/confusion_matrix.png`.
+Macro F1 is the headline metric because the classes are imbalanced (negative is the smallest class), so plain accuracy can hide weak performance there. For reference, always predicting the most common class gets 43% accuracy but only 0.20 macro F1. The confusion matrix is in `reports/confusion_matrix.png`.
 
 ---
 
@@ -86,6 +86,21 @@ A **stacking ensemble**: four different base learners whose predictions are comb
 - Linear SVM (probability-calibrated)
 - Logistic Regression
 - Complement Naive Bayes
+
+### Why a stacking ensemble?
+
+Each base model trained alone on the same features, compared on the same test set:
+
+| Model | Macro F1 | Accuracy | F1 neg | F1 neutral | F1 pos | Train time |
+|---|---|---|---|---|---|---|
+| Majority-class baseline | 0.2005 | 0.4301 | 0.000 | 0.000 | 0.602 | - |
+| LightGBM | 0.8509 | 0.8609 | 0.788 | 0.898 | 0.867 | 65 s |
+| Linear SVM (calibrated) | 0.8435 | 0.8586 | 0.761 | 0.895 | 0.874 | 3 s |
+| Logistic Regression | 0.8284 | 0.8400 | 0.754 | 0.881 | 0.851 | 1 s |
+| Complement Naive Bayes | 0.6886 | 0.7068 | 0.614 | 0.667 | 0.784 | <1 s |
+| **Stacking ensemble** | **0.8640** | **0.8744** | **0.795** | **0.912** | **0.885** | - |
+
+The stack beats the best single model (LightGBM) by 1.3 points of macro F1. The gain is modest: a calibrated linear SVM alone reaches 0.844 in about 3 seconds, so the stack buys accuracy at the cost of training and serving four models. I did not test whether the gap is statistically significant. Reproduce with `python src/model/compare_models.py`.
 
 ---
 
