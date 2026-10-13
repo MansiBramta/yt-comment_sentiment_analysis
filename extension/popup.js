@@ -1,4 +1,4 @@
-const API = "http://3.107.232.78:8000";
+const API = "http://13.236.240.237:8000";
 const $ = (id) => document.getElementById(id);
 
 function getVideoId(url) {

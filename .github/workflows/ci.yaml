@@ -75,3 +75,22 @@ jobs:
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest .
           docker push --all-tags $REGISTRY/$REPOSITORY
+
+  deploy:
+    needs: build-and-push
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Redeploy on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 10m
+          script: bash /home/ubuntu/redeploy.sh
+
+      - name: Check the API is up
+        run: |
+          sleep 20
+          curl -fsS http://${{ secrets.EC2_HOST }}:8000/
