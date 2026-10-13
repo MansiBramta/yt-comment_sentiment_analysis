@@ -102,6 +102,21 @@ Each base model trained alone on the same features, compared on the same test se
 
 The stack beats the best single model (LightGBM) by 1.3 points of macro F1. The gain is modest: a calibrated linear SVM alone reaches 0.844 in about 3 seconds, so the stack buys accuracy at the cost of training and serving four models. I did not test whether the gap is statistically significant. Reproduce with `python src/model/compare_models.py`.
 
+### Error analysis
+
+`python src/model/error_analysis.py` writes `reports/error_analysis.md` with the full breakdown (confusion matrix, accuracy by length and confidence, example mistakes, top words per class).
+
+- **By class:** neutral is easiest (95% recall), positive 85%, negative 80%.
+- **Polarity flips** (positive vs negative) are 456 of the 921 test mistakes (about half).
+- **Confidence is informative:** accuracy is 95% when confidence is at least 0.9 (57% of comments) and about 60% below 0.7 (12.5% of comments), so low-confidence predictions could be flagged as uncertain.
+- **Length:** 1-5 word comments are 93.6% accurate, 16-40 word comments 81.5%.
+
+Patterns in a sample of mistakes (qualitative, not measured rates):
+1. Word-level cues fail on negation and idiom, for example "not disappointed" or "sorry" used in a positive sense.
+2. Long political comments are critical in tone but often labelled positive.
+3. Some of the most confident mistakes look like label noise. How the dataset labels were created has not been verified.
+4. The model also picks up topic and language cues: the strongest neutral words include Hinglish and political names. This is a risk when applying it to YouTube comments.
+
 ---
 
 ## Model registry and promotion
