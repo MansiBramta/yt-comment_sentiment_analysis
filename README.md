@@ -276,12 +276,23 @@ mlflow server --host 0.0.0.0 --port 5000 --workers 1 \
   --allowed-hosts "<server-ip>:5000,localhost:5000" \
   --cors-allowed-origins "http://<server-ip>:5000"
 ```
+## Domain shift check
 
+The model is trained on English Reddit comments, so I tested it on data it had never seen: 105 YouTube comments from three Hinglish-language tutorial videos, which I labelled by hand (`src/data/fetch_youtube_sample.py`, `src/model/domain_shift.py`, results in `reports/domain_shift.md`).
+
+| | Reddit test set | Hinglish YouTube sample |
+|---|---|---|
+| Macro F1 | 0.864 | 0.396 |
+| Accuracy | 0.874 | 0.590 |
+
+On this sample the model scores below a majority-class baseline (0.686 accuracy). It over-predicts **neutral** (54 predictions against 27 true neutrals) and misses most of the negatives, and 29 of 72 positive comments were labelled neutral. The main cause is vocabulary: Romanized Hindi words ("bahut accha", "shabbash") never appear in the Reddit training data, so the TF-IDF features carry no signal for them. The model is also overconfident here: at 0.9+ confidence it is right only 69% of the time.
+
+Caveats: small sample (105), one labeller, only 6 negative comments (so negative-class F1 is very noisy), and all three videos were Hinglish. It shows how large the gap can be, not an exact number. Fixing it would need Hinglish training data or a multilingual model.
 ---
 
 ## Limitations and next steps
 
-- **Domain shift:** the model is trained on Reddit comments and applied to YouTube comments. Slang, emoji, sarcasm and non-English text (including Hinglish) are weaker spots. Hand-labelling a sample of YouTube comments would quantify the drop.
+- **Domain shift:** measured above. On Hinglish YouTube comments the model drops from 0.864 to 0.396 macro F1. It works best on English text similar to its Reddit training data.
 - Only **top-level comments** are analysed, capped at 300 per video.
 - The API runs on a single small EC2 instance over plain HTTP, with no authentication or rate limiting.
 - The deployed API serves the model baked into the image. It does not yet load the `champion` model from the registry at start-up.
